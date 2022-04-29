@@ -1,22 +1,26 @@
 package main
 
 import (
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ec2"
+
 	"fmt"
-	"context"
-	"log"
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 func main() {
-	// Load the Shared AWS Configuration (~/.aws/config)
-	cfg, err := config.LoadDefaultConfig(context.TODO())
+	// Load session from shared config
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+
+	// Create new EC2 client
+	ec2Svc := ec2.New(sess)
+
+	// Call to get detailed information on each instance
+	result, err := ec2Svc.DescribeAccountAttributes(nil)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Error", err)
+	} else {
+		fmt.Println("Success", result)
 	}
-
-	
-
-	fmt.Println("This command is not yet supported.")
 }
